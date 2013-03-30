@@ -49,9 +49,9 @@ void police(CRGB color1, CRGB color2, int DELAY){
 }
 
 int rainbowOffset = 0;
-void rainbowAllLeds(int DELAY, int colorStep, boolean reversed){
+void rainbowAllLeds(int DELAY, int colorStep, int v, boolean reversed){
   for (int i=0; i<NUM_LEDS; i++){
-    leds[i] = hsv2rgb(getCHSV((((int)(360.0f/NUM_LEDS*i))+rainbowOffset)%360 , 255, brightness));
+    leds[i] = hsv2rgb(getCHSV((((int)(360.0f/NUM_LEDS*i))+rainbowOffset)%360 , 255, v));
   }
   show();
   if (reversed) rainbowOffset = (rainbowOffset+(360-colorStep)) % 360;
@@ -59,10 +59,10 @@ void rainbowAllLeds(int DELAY, int colorStep, boolean reversed){
   delay(DELAY);
 }
 
-void rainbowArms(int DELAY, int colorStep, boolean reversed){
+void rainbowArms(int DELAY, int colorStep, int v, boolean reversed){
   for (int a=0; a<NUM_ARMS; a++){
     for (int i=0; i<LEDS_PER_ARM; i++){
-      setArmLed(a, i, hsv2rgb(getCHSV((((int)(360.0f/LEDS_PER_ARM*i))+rainbowOffset)%360 , 255, brightness)));
+      setArmLed(a, i, hsv2rgb(getCHSV((((int)(360.0f/LEDS_PER_ARM*i))+rainbowOffset)%360 , 255, v)));
     }
   }
   show();
@@ -71,9 +71,9 @@ void rainbowArms(int DELAY, int colorStep, boolean reversed){
   delay(DELAY);
 }
 
-void rainbowCycle(int DELAY, int colorStep, boolean reversed){
+void rainbowCycle(int DELAY, int colorStep, int v, boolean reversed){
   for (int a=0; a<NUM_ARMS; a++){
-    setArm(a, hsv2rgb(getCHSV((((int)(360.0f/NUM_ARMS*a))+rainbowOffset)%360 , 255, brightness)));
+    setArm(a, hsv2rgb(getCHSV((((int)(360.0f/NUM_ARMS*a))+rainbowOffset)%360 , 255, v)));
   }
   show();
   if (reversed) rainbowOffset = (rainbowOffset+(360-colorStep)) % 360;

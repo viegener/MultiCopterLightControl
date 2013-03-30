@@ -154,15 +154,15 @@ void handleMode(int m){
       break;
     }
     case MODE_RAINBOW:{
-      rainbowAllLeds(DELAY, 2, reverse);
+      rainbowAllLeds(DELAY, 2, brightness, reverse);
       break;
     }
     case MODE_RAINBOW_ARMS:{
-      rainbowArms(DELAY, 5, reverse);
+      rainbowArms(DELAY, 5, brightness, reverse);
       break;
     }
     case MODE_RAINBOW_CYCLE:{
-      rainbowCycle(DELAY, 5, reverse);
+      rainbowCycle(DELAY, 5, brightness, reverse);
       break;
     }
     case MODE_CYCLING_DOT:{
