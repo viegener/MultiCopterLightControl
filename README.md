@@ -3,13 +3,20 @@ MultiCopterLightControl
 
 First Version of MultiCopterLightControl (MCLC)
 
-MCLC is an open source project to control a WS2811 RGB LED strip with an arduino. It's main goal is to support different lightning modes for multicopters. Even though it can be used for other lightning projects like MoodLamps etc. with some (small) modifications. At the moment, the project only supports some lightning effects and the control of the program is limited to serial commands. 
+MCLC is an open source project to control a WS2811 RGB LED strip with an Arduino. It's main goal is to support different lightning modes for multicopters. Even though it can be used for other lightning projects like MoodLamps etc. with some (small) modifications. At the moment, the project only supports some lightning effects and the control of the program is limited to serial commands. 
 
 I decided to use FastSPI_LED2, even it's in the beta phase, because it's very lightweight compared to the first version of FastSPI_LED. My respect and thanks to the developer of FastSPI_LED, which is an very easy to use piece of software.
 https://code.google.com/p/fastspi/
 
-Now I will explain in short, the current structure of the arduino code, followed by the available effects and settings.
+Now I will explain in short, the requirements, the current structure of the Arduino code, followed by the available effects and settings.
 
+Requirements
+============
+To compile the sketch and upload it to your arduino, you need the actual arduino IDE. Addionally you must have installed the following two libraries into your arduino directory:<br/>
+<b>SerialCommand</b>: <a>https://github.com/kroimon/Arduino-SerialCommand</a><br/>
+<b>FastSPI_LED2</b>: <a>http://code.google.com/p/fastspi/</a><br/>
+
+And of course you need at least one WS2811 RGB-LED strip and an Arduino ;-)
 
 Code Structure
 ==============
@@ -26,7 +33,7 @@ Holds all definitions of data structures we use in the project.
 This file can be modified to meet your own needs. See below for the different available settings.
 
 <b>SerialCommands.ino</b><br/>
-This file defines/executes all serial commands. Later on, this file can be replaced or another file added to provide other control interfaces. See below for a list of available commands.
+This file defines/executes all serial commands. See below for a list of available commands.
 
 <b>Sequences.ino</b><br/>
 In this file, all lightning effects are implemented. See below for a list of available effects.
