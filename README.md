@@ -44,6 +44,7 @@ Settings
 <b>NUM_ARMS</b>        = Number of arms of the multicopter<br/>
 <b>LEDS_PER_ARM</b>    = LEDs per arm<br/>
 <b>LED_PIN</b>         = digital pin on the arduino to connect the data pin of the LED strip<br/>
+<b>MODE_DEFAULT</b>    = default mode = start mode<br/>
 
 Uncomment "#define DEBUG" to disable debug output on serial.
 Some modes are also defined and you can set an default mode. This mode will be used, if no valid mode selected.
