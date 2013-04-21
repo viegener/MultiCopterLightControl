@@ -6,26 +6,31 @@
 #include "structs.h"
 
 struct CRGB leds[NUM_LEDS];
+struct CRGB leds_rom[NUM_LEDS];
 WS2811Controller800Mhz<LED_PIN> LED;
 SerialCommand sCmd;
 
-int mode = 0;
-int lastMode = -1;
+int mode = MODE_DEFAULT;
 CRGB currentRGB = {0, 0, 0};
 boolean reverse = false;
 int brightness = 50;
-int DELAY = 50;
+int DELAY = 100;
 
 void setup(){
   Serial.begin(115200);
   LED.init();
   clearLeds();
+  readLeds();
   initSerialCommands();
   DEBUG_PRINTLN("--- SETUP COMPLETE ---");
 }
 
 void clearLeds(){
   memset(leds, 0, NUM_LEDS * sizeof(struct CRGB));
+}
+
+void allLeds(CRGB color){
+  for (int i=0; i<NUM_LEDS; i++) leds[i] = color;
 }
 
 void setLed(int iLed, CRGB color){
@@ -135,78 +140,41 @@ void writeLeds(){
     EEPROM.write(i * 3 + 1, (byte)(255 - leds[i].g));
     EEPROM.write(i * 3 + 2, (byte)(255 - leds[i].b));
   }
+  readLeds();
 }
 
 void readLeds(){
   for (int i=0; i<NUM_LEDS; i++){
-    leds[i].r = (byte)(255 - EEPROM.read(i * 3 + 0));
-    leds[i].g = (byte)(255 - EEPROM.read(i * 3 + 1));
-    leds[i].b = (byte)(255 - EEPROM.read(i * 3 + 2));
-  }
-}
-
-void handleMode(int m){
-  switch(m){
-    case MODE_SAVED_COLORS:{
-      if (lastMode!=mode) readLeds();
-      show();
-      delay(50);
-      break;
-    }
-    case MODE_RAINBOW:{
-      rainbowAllLeds(DELAY, 2, brightness, reverse);
-      break;
-    }
-    case MODE_RAINBOW_ARMS:{
-      rainbowArms(DELAY, 5, brightness, reverse);
-      break;
-    }
-    case MODE_RAINBOW_CYCLE:{
-      rainbowCycle(DELAY, 5, brightness, reverse);
-      break;
-    }
-    case MODE_CYCLING_DOT:{
-      cyclingDot(currentRGB, DELAY, reverse);
-      break;
-    }
-    case MODE_POLICE:{
-      CHSV hsv = rgb2hsv(currentRGB);
-      if (reverse) hsv.h = (hsv.h + 120)%360;
-      else hsv.h = (hsv.h + 240)%360;
-      CRGB color2 = hsv2rgb(hsv);
-      police(currentRGB, color2, DELAY);
-      break;
-    }
-    case MODE_SCANNER_ALL:{
-      scanner(currentRGB, DELAY);
-      break;
-    }
-    case MODE_RUNNING_DOT:{
-      cycleThroughAllLeds(currentRGB, DELAY, reverse);
-      break;
-    }
+    leds_rom[i].r = (byte)(255 - EEPROM.read(i * 3 + 0));
+    leds_rom[i].g = (byte)(255 - EEPROM.read(i * 3 + 1));
+    leds_rom[i].b = (byte)(255 - EEPROM.read(i * 3 + 2));
   }
 }
 
 void loop(){
   sCmd.readSerial();
   switch(mode){
-    case MODE_SAVED_COLORS:
-    case MODE_RAINBOW:
-    case MODE_RAINBOW_ARMS:
-    case MODE_RAINBOW_CYCLE:
-    case MODE_CYCLING_DOT:
-    case MODE_POLICE:
-    case MODE_RUNNING_DOT:
-    case MODE_SCANNER_ALL:
-      handleMode(mode);
+    case MODE_SAVED_COLORS:{
+      savedColors(DELAY);
       break;
-    default:
-      handleMode(MODE_DEFAULT);
+    }
+    case MODE_RUNNING_LED:{
+      runningLed(DELAY, NULL, 100, true); 
       break;
+    }
+    case MODE_RUNNING_LED_TEST1:{
+      runningLed(DELAY, NULL, 100, false); 
+      break;
+    }
+    case MODE_RUNNING_LED_TEST2:{
+      runningLed(DELAY, &getCRGB(250, 250, 250), 100, false); 
+      break;
+    }
+    case MODE_RUNNING_LED_TEST3:{
+      runningLed(DELAY, &getCRGB(0, 255, 0), 100, true); 
+      break;
+    }
   }
-  lastMode = mode;
 }
-
 
 

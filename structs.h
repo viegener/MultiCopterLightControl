@@ -1,7 +1,7 @@
-struct CRGB { 
-  byte g; 
-  byte r; 
-  byte b; 
+struct CRGB{
+  byte g;
+  byte r;
+  byte b;
 };
 
 struct CHSV{
@@ -9,3 +9,4 @@ struct CHSV{
   byte s;
   byte v;
 };
+

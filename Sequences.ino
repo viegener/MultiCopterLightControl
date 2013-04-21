@@ -1,26 +1,12 @@
-
-int cycleLed = 0;
-void cycleThroughAllLeds(CRGB color, int DELAY, boolean reversed){
-  clearLeds();
-  leds[cycleLed] = color;
+void oneColor(CRGB color, int DELAY){
+  allLeds(color);
   show();
-  if (reversed) cycleLed = (cycleLed + (NUM_LEDS-1)) % NUM_LEDS;
-  else cycleLed = (cycleLed + 1) % NUM_LEDS;
   delay(DELAY);
 }
 
-int scannerLed = 0;
-void scanner(CRGB color, int DELAY) {
-  CHSV hsv = rgb2hsv(color);
-  hsv.v = hsv.v/8;
-  CRGB color2 = hsv2rgb(hsv);
-  
-  clearLeds();
-  leds[scannerLed] = color2;
-  leds[(scannerLed+1)%NUM_LEDS] = color;
-  leds[(scannerLed+2)%NUM_LEDS] = color2;
-  show();  
-  scannerLed = (scannerLed+1)%NUM_LEDS;
+void savedColors(int DELAY){
+  for (int i=0; i<NUM_LEDS; i++) setLed(i, leds_rom[i]);
+  show();
   delay(DELAY);
 }
 
@@ -48,51 +34,33 @@ void police(CRGB color1, CRGB color2, int DELAY){
   delay(DELAY);
 }
 
-int rainbowOffset = 0;
-void rainbowAllLeds(int DELAY, int colorStep, int v, boolean reversed){
-  for (int i=0; i<NUM_LEDS; i++){
-    leds[i] = hsv2rgb(getCHSV((((int)(360.0f/NUM_LEDS*i))+rainbowOffset)%360 , 255, v));
-  }
-  show();
-  if (reversed) rainbowOffset = (rainbowOffset+(360-colorStep)) % 360;
-  else rainbowOffset = (rainbowOffset+colorStep) % 360;
-  delay(DELAY);
-}
-
-void rainbowArms(int DELAY, int colorStep, int v, boolean reversed){
-  for (int a=0; a<NUM_ARMS; a++){
-    for (int i=0; i<LEDS_PER_ARM; i++){
-      setArmLed(a, i, hsv2rgb(getCHSV((((int)(360.0f/LEDS_PER_ARM*i))+rainbowOffset)%360 , 255, v)));
-    }
-  }
-  show();
-  if (reversed) rainbowOffset = (rainbowOffset+(360-colorStep)) % 360;
-  else rainbowOffset = (rainbowOffset+colorStep) % 360;
-  delay(DELAY);
-}
-
-void rainbowCycle(int DELAY, int colorStep, int v, boolean reversed){
-  for (int a=0; a<NUM_ARMS; a++){
-    setArm(a, hsv2rgb(getCHSV((((int)(360.0f/NUM_ARMS*a))+rainbowOffset)%360 , 255, v)));
-  }
-  show();
-  if (reversed) rainbowOffset = (rainbowOffset+(360-colorStep)) % 360;
-  else rainbowOffset = (rainbowOffset+colorStep) % 360;
-  delay(DELAY);
-}
-
-int cyclingDotArm = 0;
-int cyclingDotLed = 0;
-void cyclingDot(CRGB color, int DELAY, boolean reversed){
+int runningOffset = 0;
+int runningForward = true;
+void runningLed(int DELAY, CRGB* color, int blinkDelay, boolean bounce){
   clearLeds();
-  setArmLed(cyclingDotArm, cyclingDotLed, color);
-  show();
-  if (reversed) cyclingDotArm = (cyclingDotArm+(NUM_ARMS-1)) % NUM_ARMS;
-  else cyclingDotArm = (cyclingDotArm+1) % NUM_ARMS;
-  if (cyclingDotArm==0){
-    if (reversed) cyclingDotLed = (cyclingDotLed+(LEDS_PER_ARM-1))%LEDS_PER_ARM;
-    else cyclingDotLed = (cyclingDotLed+1)%LEDS_PER_ARM;
+  int iLed = runningOffset;
+  for (int a=0; a<NUM_ARMS; a++){
+    setLed(iLed, leds_rom[iLed]);
+    iLed += LEDS_PER_ARM;
   }
+  show();
+  
+  if (bounce){
+    if (runningOffset==0) runningForward = true;
+    else if (runningOffset==LEDS_PER_ARM-1) runningForward = false;
+  }
+  else runningForward = true;
+  
+  boolean flash = (blinkDelay>=0 && runningOffset == LEDS_PER_ARM-1);
+  
+  if (runningForward) runningOffset = (runningOffset+1)%LEDS_PER_ARM;
+  else runningOffset = (runningOffset+LEDS_PER_ARM-1)%LEDS_PER_ARM;
+  
   delay(DELAY);
+
+  if (flash){
+    if (color!=NULL) oneColor(*color, blinkDelay);
+    else savedColors(blinkDelay);
+  }  
 }
 
