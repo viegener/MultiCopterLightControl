@@ -6,7 +6,7 @@
 #include "structs.h"
 
 struct CRGB leds[NUM_LEDS];
-struct CRGB leds_rom[NUM_LEDS];
+struct CRGB lastReadLeds[NUM_LEDS];
 WS2811Controller800Mhz<LED_PIN> LED;
 SerialCommand sCmd;
 
@@ -145,17 +145,22 @@ void writeLeds(){
 
 void readLeds(){
   for (int i=0; i<NUM_LEDS; i++){
-    leds_rom[i].r = (byte)(255 - EEPROM.read(i * 3 + 0));
-    leds_rom[i].g = (byte)(255 - EEPROM.read(i * 3 + 1));
-    leds_rom[i].b = (byte)(255 - EEPROM.read(i * 3 + 2));
+    leds[i].r = (byte)(255 - EEPROM.read(i * 3 + 0));
+    leds[i].g = (byte)(255 - EEPROM.read(i * 3 + 1));
+    leds[i].b = (byte)(255 - EEPROM.read(i * 3 + 2));
+    lastReadLeds[i].r = leds[i].r;
+    lastReadLeds[i].g = leds[i].g;
+    lastReadLeds[i].b = leds[i].b;
   }
 }
 
+int lastMode = -1;
 void loop(){
   sCmd.readSerial();
   switch(mode){
     case MODE_SAVED_COLORS:{
-      savedColors(DELAY);
+      if (lastMode != mode) readLeds();
+      showCurrentColors(DELAY);
       break;
     }
     case MODE_RUNNING_LED:{
@@ -175,6 +180,7 @@ void loop(){
       break;
     }
   }
+  lastMode = mode;
 }
 
 

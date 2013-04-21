@@ -4,8 +4,13 @@ void oneColor(CRGB color, int DELAY){
   delay(DELAY);
 }
 
+void showCurrentColors(int DELAY){
+  show();
+  delay(DELAY);
+}
+
 void savedColors(int DELAY){
-  for (int i=0; i<NUM_LEDS; i++) setLed(i, leds_rom[i]);
+  for (int i=0; i<NUM_LEDS; i++) setLed(i, lastReadLeds[i]);
   show();
   delay(DELAY);
 }
@@ -40,7 +45,7 @@ void runningLed(int DELAY, CRGB* color, int blinkDelay, boolean bounce){
   clearLeds();
   int iLed = runningOffset;
   for (int a=0; a<NUM_ARMS; a++){
-    setLed(iLed, leds_rom[iLed]);
+    setLed(iLed, lastReadLeds[iLed]);
     iLed += LEDS_PER_ARM;
   }
   show();
