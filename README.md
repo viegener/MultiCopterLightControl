@@ -75,10 +75,4 @@ Effects
 Modename, description and available settings of the effect.<br/>
 R = REVERSE, D = DELAY, B = BRIGHTNESS, C = COLOR<br/><br/>
 <b>MODE_SAVED_COLORS</b>       : show in EEPROM stored colors [C]<br/>
-<b>MODE_RAINBOW</b>            : cycle through all colors all leds (one led on color) [R, D, B]<br/>
-<b>MODE_RAINBOW_ARMS</b>       : cycle through all colors per arm (all arms identical, one arm_led one color) [R, D, B]<br/>
-<b>MODE_RAINBOW_CYCLE</b>      : cycle through all colors arm-wise (one arm one color) [R, D, B]<br/>
-<b>MODE_CYCLING_DOT</b>        : one dot cycle through the arms (inside-out or reversed) [R, D, C]<br/>
-<b>MODE_POLICE</b>             : blinking arms in two different color, currentColor + color shift [R, D, C]<br/>
-<b>MODE_SCANNER_ALL</b>        : scanner in given color [D, C]<br/>
-<b>MODE_RUNNING_DOT</b>        : one dot running through all leds [R, D, C]<br/>
+<b>MODE_RUNNING_LED</b>        : synchronous running led on every arm + flash if blinkDelay >= 0 [C, D]<br/>
