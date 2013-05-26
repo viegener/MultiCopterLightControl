@@ -1,28 +1,30 @@
 #include <FastSPI_LED2.h>
 #include <EEPROM.h>
-#include <SerialCommand.h>
 
 #include "config.h"
 #include "structs.h"
 
 struct CRGB leds[NUM_LEDS];
-struct CRGB lastReadLeds[NUM_LEDS];
 WS2811Controller800Mhz<LED_PIN> LED;
-SerialCommand sCmd;
 
-int mode = MODE_DEFAULT;
-CRGB currentRGB = {0, 0, 0};
+int mode = MODE_0;
 boolean reverse = false;
-int brightness = 50;
 int DELAY = 100;
+int config = 0;
+int currentColorIdx = 0;
 
 void setup(){
-  Serial.begin(115200);
   LED.init();
   clearLeds();
+  readColors();
   readLeds();
-  initSerialCommands();
-  DEBUG_PRINTLN("--- SETUP COMPLETE ---");
+  #if defined (INPUT_TERMINAL)
+    setupInputTerminal();
+  #elif defined (INPUT_RC)
+    setupInputRC();
+  #elif defined (INPUT_MSP)
+    setupInputMSP();
+  #endif
 }
 
 void clearLeds(){
@@ -37,6 +39,10 @@ void setLed(int iLed, CRGB color){
   leds[iLed] = color;
 }
 
+int getLedIdx(int arm, int armLed){
+  return arm * LEDS_PER_ARM + armLed;
+}
+
 void setArmLed(int iArm, int iLed, CRGB color){
   int i = iArm * LEDS_PER_ARM + iLed;
   leds[i] = color;
@@ -46,141 +52,40 @@ void setArm(int iArm, CRGB color){
   for (int i=0; i<LEDS_PER_ARM; i++) setArmLed(iArm, i, color);
 }
 
-CRGB getCRGB(byte r, byte g, byte b){
-  CRGB c = {g, r, b};
-  return c;
-}
-
-CHSV getCHSV(int h, byte s, byte v){
-  CHSV c = {h, s, v};
-  return c;
-}
-
-inline CRGB hsv2rgb(const CHSV c) {
-  // hue: 0-359, sat: 0-255, val (brightness): 0-255
-  CRGB rgb;
-  int base;
-  if (c.s == 0) { // Achromatic color (gray).
-    rgb.r = c.v;
-    rgb.g = c.v;
-    rgb.b = c.v;
-  } 
-  else  {
-    base = ((255 - c.s) * c.v)>>8;
-    switch(c.h/60) {
-    case 0:
-      rgb.r = c.v;
-      rgb.g = (((c.v-base)*c.h)/60)+base;
-      rgb.b = base;
-      break;
-    case 1:
-      rgb.r = (((c.v-base)*(60-(c.h%60)))/60)+base;
-      rgb.g = c.v;
-      rgb.b = base;
-      break;
-    case 2:
-      rgb.r = base;
-      rgb.g = c.v;
-      rgb.b = (((c.v-base)*(c.h%60))/60)+base;
-      break;
-    case 3:
-      rgb.r = base;
-      rgb.g = (((c.v-base)*(60-(c.h%60)))/60)+base;
-      rgb.b = c.v;
-      break;
-    case 4:
-      rgb.r = (((c.v-base)*(c.h%60))/60)+base;
-      rgb.g = base;
-      rgb.b = c.v;
-      break;
-    case 5:
-      rgb.r = c.v;
-      rgb.g = base;
-      rgb.b = (((c.v-base)*(60-(c.h%60)))/60)+base;
-      break;
-    }
-  }
-  return rgb;
-}
-
-inline CHSV rgb2hsv(const CRGB c) {
-  // r: 0-255, g: 0-255, b: 0-255
-  float fr = c.r / 255.0;
-  float fg = c.g / 255.0;
-  float fb = c.b / 255.0;
-  float h, s, v, imax, imin;
-  imax = max(max(fr, fg), fb);
-  imin = min(min(fr, fg), fb);
-  if (imin == imax){
-    h = 0;
-    s = 0;
-    v = imax;
-  }
-  else{
-    float d = (fr==imin) ? fg-fb : ((fb==imin) ? fr-fg : fb-fr);
-    float j = (fr==imin) ? 3 : ((fb==imin) ? 1 : 5);
-    h = 60.0 * (j - d/(imax - imin));
-    s = (float)(imax - imin) / imax;
-    v = imax;
-  }
-  CHSV hsv;
-  hsv.h = (uint16_t)h;
-  hsv.s = (uint16_t)(s * 255);
-  hsv.v = (uint16_t)(v * 255);
-  return hsv;
-}
-
 void show(){
   LED.showRGB((byte*)leds, NUM_LEDS);
 }
 
-void writeLeds(){
-  for (int i=0; i<NUM_LEDS; i++){
-    EEPROM.write(i * 3 + 0, (byte)(255 - leds[i].r));
-    EEPROM.write(i * 3 + 1, (byte)(255 - leds[i].g));
-    EEPROM.write(i * 3 + 2, (byte)(255 - leds[i].b));
-  }
-  readLeds();
-}
-
-void readLeds(){
-  for (int i=0; i<NUM_LEDS; i++){
-    leds[i].r = (byte)(255 - EEPROM.read(i * 3 + 0));
-    leds[i].g = (byte)(255 - EEPROM.read(i * 3 + 1));
-    leds[i].b = (byte)(255 - EEPROM.read(i * 3 + 2));
-    lastReadLeds[i].r = leds[i].r;
-    lastReadLeds[i].g = leds[i].g;
-    lastReadLeds[i].b = leds[i].b;
-  }
-}
-
 int lastMode = -1;
 void loop(){
-  sCmd.readSerial();
+  #if defined (INPUT_TERMINAL)
+    loopInputTerminal();
+  #elif defined (INPUT_RC)
+    loopInputRC();
+  #elif defined (INPUT_MSP)
+    loopInputMSP();
+  #endif
+
   switch(mode){
-    case MODE_SAVED_COLORS:{
+    case MODE_0:{
       if (lastMode != mode) readLeds();
-      showCurrentColors(DELAY);
+      showCurrentColors(config, DELAY);
       break;
     }
-    case MODE_RUNNING_LED:{
-      runningLed(DELAY, NULL, 100, true); 
+    case MODE_1:{
+      runningLed(DELAY, config, NULL, 0, true, LEDS_PER_ARM); 
       break;
     }
-    case MODE_RUNNING_LED_TEST1:{
-      runningLed(DELAY, NULL, 100, false); 
+    case MODE_2:{
+//      runningLed(DELAY, config, &getCRGB(250, 250, 250), 100, false, 1); 
+      pulseBrightness(DELAY, config, 50, 250, 50);
       break;
     }
-    case MODE_RUNNING_LED_TEST2:{
-      runningLed(DELAY, &getCRGB(250, 250, 250), 100, false); 
-      break;
-    }
-    case MODE_RUNNING_LED_TEST3:{
-      runningLed(DELAY, &getCRGB(0, 255, 0), 100, true); 
+    case MODE_3:{
+      police(&getCRGB(250, 0, 0), &getCRGB(0, 0, 250), 500);
       break;
     }
   }
   lastMode = mode;
 }
-
 

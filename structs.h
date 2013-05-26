@@ -1,12 +1,12 @@
 struct CRGB{
-  byte g;
-  byte r;
-  byte b;
+  uint8_t g;
+  uint8_t r;
+  uint8_t b;
 };
 
 struct CHSV{
-  int h;
-  byte s;
-  byte v;
+  uint16_t h;
+  uint8_t s;
+  uint8_t v;
 };
 
