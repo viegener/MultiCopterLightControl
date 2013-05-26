@@ -40,7 +40,7 @@ void police(CRGB* color1, CRGB* color2, int DELAY){
 
 int runningOffset = 0;
 int runningForward = true;
-void runningLed(int DELAY, int iConfig, CRGB* blinkColor, int blinkDelay, boolean bounce, int length){
+void runningLed(int iConfig, CRGB* blinkColor, int blinkDelay, boolean bounce, int length, int DELAY){
   clearLeds();
   if (length<1) length=1;
   for (int i=0; i<length; i++){
@@ -72,7 +72,7 @@ void runningLed(int DELAY, int iConfig, CRGB* blinkColor, int blinkDelay, boolea
   }  
 }
 
-void showBrightness(int DELAY, int iConfig, int brightness){
+void showBrightness(int iConfig, int brightness, int DELAY){
   int v = brightness%256;
   clearLeds();
   for (int iLed=0; iLed<NUM_LEDS; iLed++){
@@ -85,7 +85,7 @@ void showBrightness(int DELAY, int iConfig, int brightness){
 
 boolean pulseDirIn = true;
 int pulseStep = 0;
-void pulseBrightness(int DELAY, int iConfig, int startBrightness, int endBrightness, int steps){
+void pulseBrightness(int iConfig, int startBrightness, int endBrightness, int steps, int DELAY){
   float sv = (float)(startBrightness%256);
   float ev = (float)(endBrightness%256);
   float dv = (ev-sv)/steps;

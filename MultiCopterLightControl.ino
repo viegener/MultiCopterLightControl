@@ -73,12 +73,12 @@ void loop(){
       break;
     }
     case MODE_1:{
-      runningLed(DELAY, config, NULL, 0, true, LEDS_PER_ARM); 
+      runningLed(config, NULL, 0, true, LEDS_PER_ARM, DELAY); 
       break;
     }
     case MODE_2:{
-//      runningLed(DELAY, config, &getCRGB(250, 250, 250), 100, false, 1); 
-      pulseBrightness(DELAY, config, 50, 250, 50);
+//      runningLed(config, &getCRGB(250, 250, 250), 100, false, 1, DELAY); 
+      pulseBrightness(config, 50, 250, 50, DELAY);
       break;
     }
     case MODE_3:{

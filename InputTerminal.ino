@@ -19,9 +19,9 @@ void initSerialCommands(){
   sCmd.addCommand("setG", serialSetG);
   sCmd.addCommand("setB", serialSetB);
   sCmd.addCommand("setColor", serialSetColor);
-  sCmd.addCommand("setConfig", serialSetConfig);
   sCmd.addCommand("getColor", serialGetColor);
   sCmd.addCommand("printColor", printCurrentColor);
+  sCmd.addCommand("setConfig", serialSetConfig);
 
   sCmd.addCommand("saveColors", serialSaveColors);
   sCmd.addCommand("saveLeds", serialSaveLeds);
@@ -29,6 +29,7 @@ void initSerialCommands(){
   
   sCmd.addCommand("setArm", serialSetArm);
   sCmd.addCommand("setLed", serialSetLed);
+  
   sCmd.addCommand("m+", serialNextMode);
   sCmd.addCommand("m-", serialPreviousMode);
   sCmd.addCommand("d", serialSetDelay);
@@ -97,6 +98,7 @@ void serialGetColor(){
   int idx = readIntArg()%MAX_EEPROM_COLORS;
   currentRGB = storedColorsRGB[idx];
   currentColorIdx = idx;
+  printCurrentColor();
 }
 
 void serialSaveColors(){
