@@ -125,8 +125,7 @@
   int requestDelay = 100;
   
   void setupInputMSP(){
-    blinkLed(3, 250);
-    delay(9000);
+    delay(10000);
     Serial.begin(115200);
     sendRequestMSP(MSP_BOXNAMES);
   }
@@ -166,7 +165,7 @@
       }
       else if (c_state == HEADER_CMD && offset >= dataSize){
         /* compare calculated and transferred checksum */
-        if ((checksum&0xFF) == (c&0xFF) && !err_rcvd) evaluateCommand(cmd, (int)dataSize);
+        if ((checksum&0xFF) == (c&0xFF) && !err_rcvd) evaluateCommand(cmd);
         c_state = HEADER_IDLE;
       }
     }
@@ -296,7 +295,7 @@
     return returnValue;
   }
 
-  void evaluateCommand(byte cmd, int dataSize) {
+  void evaluateCommand(byte cmd) {
     int i;
     int icmd = (int)(cmd&0xFF);
     if (icmd == MSP_IDENT){

@@ -1,5 +1,6 @@
 // select (uncomment) one of the following input modes
-#define INPUT_TERMINAL      // use serial terminal to control lightning mode and configure led colors
+//#define INPUT_TERMINAL      // use serial terminal to control lightning mode and configure led colors
+#define INPUT_GUI           // use GUI to configure led colors
 //#define INPUT_RC            // use rc inputs to control lightning mode
 //#define INPUT_MSP           // use MultiWii Serial Protcol to control lightning mode
 
@@ -8,7 +9,7 @@
 #define LED_PIN 12             // led pin => data of led strip
 
 // input mode depending configs
-#if defined (INPUT_TERMINAL)
+#if defined (INPUT_TERMINAL) || defined (INPUT_GUI)
   #define NUM_MODES               4
 #elif defined (INPUT_RC)
   #define RC_PIN_1                10            // PIN for RC input channel 1
@@ -27,10 +28,7 @@
   #define MODE_HORIZON            MODE_2
 #endif
 
-#if defined (INPUT_TERMINAL)
-#elif defined (INPUT_RC)
-#elif defined (INPUT_MSP)
-  
+#if defined (INPUT_MSP)
   #if defined (REQUEST_MOTORS)
     int motorArmMapping[8] = {2, 1, 3, 0, -1, -1, -1, -1};  // 8 motor outputs from MultiWii-FC, mapping to the corresponding arm index of the leds
   #endif

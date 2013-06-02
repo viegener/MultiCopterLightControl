@@ -1,4 +1,3 @@
-
 void oneColor(CRGB color, int DELAY){
   allLeds(color);
   show();
@@ -69,7 +68,7 @@ void runningLed(int iConfig, CRGB* blinkColor, int blinkDelay, boolean bounce, i
   if (flash){
     if (blinkColor!=NULL) oneColor(*blinkColor, blinkDelay);
     else showCurrentColors(iConfig, blinkDelay);
-  }  
+  }
 }
 
 void showBrightness(int iConfig, int brightness, int DELAY){
@@ -83,6 +82,7 @@ void showBrightness(int iConfig, int brightness, int DELAY){
   if (DELAY>0) delay(DELAY);
 }
 
+long pulseBrightnessTime = millis();
 boolean pulseDirIn = true;
 int pulseStep = 0;
 void pulseBrightness(int iConfig, int startBrightness, int endBrightness, int steps, int DELAY){
@@ -90,7 +90,7 @@ void pulseBrightness(int iConfig, int startBrightness, int endBrightness, int st
   float ev = (float)(endBrightness%256);
   float dv = (ev-sv)/steps;
   int v = startBrightness + (int)((pulseStep%steps)*dv);
-  showBrightness(0, iConfig, v);
+  showBrightness(iConfig, v, 0);
   if (pulseDirIn) pulseStep = (pulseStep+1)%steps;
   else pulseStep = (pulseStep+(steps-1))%steps;
   if (pulseStep<=0){

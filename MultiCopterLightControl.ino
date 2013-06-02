@@ -20,6 +20,8 @@ void setup(){
   readLeds();
   #if defined (INPUT_TERMINAL)
     setupInputTerminal();
+  #elif defined (INPUT_GUI)
+    setupInputGUI();
   #elif defined (INPUT_RC)
     setupInputRC();
   #elif defined (INPUT_MSP)
@@ -60,6 +62,8 @@ int lastMode = -1;
 void loop(){
   #if defined (INPUT_TERMINAL)
     loopInputTerminal();
+  #elif defined (INPUT_GUI)
+    loopInputGUI();
   #elif defined (INPUT_RC)
     loopInputRC();
   #elif defined (INPUT_MSP)
@@ -68,7 +72,6 @@ void loop(){
 
   switch(mode){
     case MODE_0:{
-      if (lastMode != mode) readLeds();
       showCurrentColors(config, DELAY);
       break;
     }
@@ -78,7 +81,7 @@ void loop(){
     }
     case MODE_2:{
 //      runningLed(config, &getCRGB(250, 250, 250), 100, false, 1, DELAY); 
-      pulseBrightness(config, 50, 250, 50, DELAY);
+      pulseBrightness(config, 50, 250, 50, 10);
       break;
     }
     case MODE_3:{

@@ -31,6 +31,33 @@ void writeColors(){
   }
 }
 
+void readColors(){
+  for (int i=0; i<MAX_EEPROM_COLORS; i++){
+    uint8_t r, g, b;
+    r = (uint8_t) (255 - EEPROM.read(i*3 + 0));
+    g = (uint8_t) (255 - EEPROM.read(i*3 + 1));
+    b = (uint8_t) (255 - EEPROM.read(i*3 + 2));
+    storedColorsRGB[i] = getCRGB(r, g, b);
+    storedColorsHSV[i] = rgb2hsv(storedColorsRGB[i]);
+  }
+}
+
+void writeLeds(){
+  for (int i=0; i<MAX_LED_CONFIGS; i++){
+    for (int j=0; j<num_led_bytes; j++){
+      EEPROM.write(EEPROM_COLORS_OFFSET + (i * num_led_bytes) + j, (byte) storedLedColors[i][j]);
+    }
+  }
+}
+
+void readLeds(){
+  for (int i=0; i<MAX_LED_CONFIGS; i++){
+    for (int j=0; j<num_led_bytes; j++){
+      storedLedColors[i][j] = (uint8_t)EEPROM.read(EEPROM_COLORS_OFFSET + (i * num_led_bytes) + j);
+    }
+  }
+}
+
 CRGB getCRGB(uint8_t r, uint8_t g, uint8_t b){
   CRGB c = {g, r, b};
   return c;
@@ -122,33 +149,6 @@ void setLedColor(int colorIdx, int iLed, int iConfig){
 void setArmColor(int colorIdx, int iArm, int iConfig){
   for (int i=0; i<LEDS_PER_ARM; i++){
     setLedColor(colorIdx, (iArm%NUM_ARMS) * LEDS_PER_ARM + i, iConfig);
-  }
-}
-
-void readColors(){
-  for (int i=0; i<MAX_EEPROM_COLORS; i++){
-    uint8_t r, g, b;
-    r = (uint8_t) (255 - EEPROM.read(i*3 + 0));
-    g = (uint8_t) (255 - EEPROM.read(i*3 + 1));
-    b = (uint8_t) (255 - EEPROM.read(i*3 + 2));
-    storedColorsRGB[i] = getCRGB(r, g, b);
-    storedColorsHSV[i] = rgb2hsv(storedColorsRGB[i]);
-  }
-}
-
-void writeLeds(){
-  for (int i=0; i<MAX_LED_CONFIGS; i++){
-    for (int j=0; j<num_led_bytes; j++){
-      EEPROM.write(EEPROM_COLORS_OFFSET + (i * num_led_bytes) + j, (byte) storedLedColors[i][j]);
-    }
-  }
-}
-
-void readLeds(){
-  for (int i=0; i<MAX_LED_CONFIGS; i++){
-    for (int j=0; j<num_led_bytes; j++){
-      storedLedColors[i][j] = (uint8_t)EEPROM.read(EEPROM_COLORS_OFFSET + (i * num_led_bytes) + j);
-    }
   }
 }
 
