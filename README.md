@@ -1,4 +1,4 @@
-MultiCopterLightControl v0.2
+MultiCopterLightControl v0.3
 ============================
 
 MCLC ist ein OpenSource Projekt um ein WS2811 RGB LED Strip mit einem Arduino zu steuern. 
@@ -98,6 +98,7 @@ Generelle Einstellungen
 Steuerungs-Einstellugnen (nur jeweils ein Modus gleichzeit wählbar)
 
 <b>INPUT_TERMINAL</b>  = Konfiguration / Steuerung der LEDs über den Serial Monitor<br/>
+<b>INPUT_GUI</b>       = Konfiguration / Steuerung der LEDs über die GUI MclcConf<br/>
 <b>INPUT_RC</b>        = Steuerung der LEDs über einen Kanal eines RC-Empgängers<br/>
 <b>INPUT_MSP</b>       = Steuerung der LEDs über das MultiWii Serial Protocol<br/>
 
@@ -111,6 +112,7 @@ In der loop()-Methode in der Datei "MultiCopterLightControl.ino" können dann gr
 Konfiguration
 =============
 
+Per Terminal:
 <b>setR N</b>           : setzt den Rot-Wert für die aktuelle Farbe, 0 <= N < 256<br/>
 <b>setG N</b>           : setzt den Grün-Wert für die aktuelle Farbe, 0 <= N < 256<br/>
 <b>setB N</b>           : setzt den Blau-Wert für die aktuelle Farbe, 0 <= N < 256<br/>
@@ -150,6 +152,22 @@ Bei der Erst-Konfigurationen solltet ihr wie folgt vorgehen:
       <li>Die LED-Konfigurationen speichern mit "saveLeds"
     </ul>
   </li>
+</ol>
+
+Per GUI:
+<ol>
+  <li>Im Sketch INPUT_GUI aktivieren und alle anderen INPUT Varianten deaktivieren und den Sketch auf den Arduino laden</li>
+  <li>Den Arduino mit MCLC an den USB-Port anschliessen, warten bis er vom Betriebssystem erkannt wurde und anschliessend MclcConf starten</li>
+  <li>Dann den Port des Arduino auswählen, z.B. COM 6</li>
+  <li>Sobald die Verbindung aufgebaut wurde, werden die Einstellungen aus MCLC ausgelesen und angezeigt</li>
+  <li>Mit einem Klick auf einen farbigen Button aus der Farbpalette (oben) können die entsprechenden Farben ausgewählt und mit dem ColorPicker verändert werden</li>
+  <li>Wenn die Farben wie gewollt eingestellt sind, kann man sie mit "Set Colors" übertragen und testen oder mit "Save Colors" ins EEPROM speichern</li>
+  <li>Danach kann man den LEDs diese Farben zuordnen</li>
+  <li>Mit einem Klick auf eine Palettenfarbe, wird diese ausgewählt</li>
+  <li>Mit einem Klick auf eine LED (unten) kann die ausgewählte Farbe der LED zugeordnet werden</li>
+  <li>Analog zu den Farben, kann die aktuelle Konfiguration mit "Set Config" auf den Arduino übertragen oder mit "Save Config" im EEPROM gespeichert werden.</li>
+  <li>Mit "Get Colors" bzw. "Get Configs" können wieder die Farben/Konfigurationen aus dem Arduino EEPROM geladen werden.</li>
+  <li>Mit "Next Mode/Config" und "Prev Mode/Config" kann der nächste Lichtmodus bzw. LED-Konfiguration geladen werden</li>
 </ol>
 
 LED-Effekte
