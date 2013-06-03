@@ -76,7 +76,7 @@ void showBrightness(int iConfig, int brightness, int DELAY){
   clearLeds();
   for (int iLed=0; iLed<NUM_LEDS; iLed++){
     CHSV hsv = getLedHSV(iLed, iConfig);
-    setLed(iLed, hsv2rgb(getCHSV(hsv.h, hsv.s, v)));
+    setLed(iLed, hsv2rgb(CHSV(hsv.h, hsv.s, v)));
   }
   show();
   if (DELAY>0) delay(DELAY);

@@ -118,7 +118,7 @@
           uint8_t r = read8();
           uint8_t g = read8();
           uint8_t b = read8();
-          CRGB rgb = getCRGB(r, g, b);
+          CRGB rgb = CRGB(r, g, b);
           storedColorsRGB[i] = rgb;
           storedColorsHSV[i] = rgb2hsv(storedColorsRGB[i]);
         }

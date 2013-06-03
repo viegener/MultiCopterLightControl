@@ -2,10 +2,8 @@
 #include <EEPROM.h>
 
 #include "config.h"
-#include "structs.h"
 
 struct CRGB leds[NUM_LEDS];
-WS2811Controller800Mhz<LED_PIN> LED;
 
 int mode = MODE_0;
 boolean reverse = false;
@@ -14,7 +12,8 @@ int config = 0;
 int currentColorIdx = 0;
 
 void setup(){
-  LED.init();
+  LEDS.setBrightness(64);
+  LEDS.addLeds<WS2811, LED_PIN, GRB>(leds, NUM_LEDS);
   clearLeds();
   readColors();
   readLeds();
@@ -55,7 +54,7 @@ void setArm(int iArm, CRGB color){
 }
 
 void show(){
-  LED.showRGB((byte*)leds, NUM_LEDS);
+  LEDS.show();
 }
 
 int lastMode = -1;
@@ -85,7 +84,7 @@ void loop(){
       break;
     }
     case MODE_3:{
-      police(&getCRGB(250, 0, 0), &getCRGB(0, 0, 250), 500);
+      police(&CRGB(250, 0, 0), &CRGB(0, 0, 250), 500);
       break;
     }
   }

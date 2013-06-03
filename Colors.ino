@@ -5,7 +5,7 @@
 
 CRGB storedColorsRGB[MAX_EEPROM_COLORS];
 CHSV storedColorsHSV[MAX_EEPROM_COLORS];
-CRGB currentRGB = {0, 0, 0};
+CRGB currentRGB = CRGB(0, 0, 0);
 
 int num_led_bytes = ceil(NUM_LEDS/2.0f);
 uint8_t storedLedColors[MAX_LED_CONFIGS][(NUM_LEDS/2)+1];
@@ -37,7 +37,7 @@ void readColors(){
     r = (uint8_t) (255 - EEPROM.read(i*3 + 0));
     g = (uint8_t) (255 - EEPROM.read(i*3 + 1));
     b = (uint8_t) (255 - EEPROM.read(i*3 + 2));
-    storedColorsRGB[i] = getCRGB(r, g, b);
+    storedColorsRGB[i] = CRGB(r, g, b);
     storedColorsHSV[i] = rgb2hsv(storedColorsRGB[i]);
   }
 }
@@ -56,16 +56,6 @@ void readLeds(){
       storedLedColors[i][j] = (uint8_t)EEPROM.read(EEPROM_COLORS_OFFSET + (i * num_led_bytes) + j);
     }
   }
-}
-
-CRGB getCRGB(uint8_t r, uint8_t g, uint8_t b){
-  CRGB c = {g, r, b};
-  return c;
-}
-
-CHSV getCHSV(uint16_t h, uint8_t s, uint8_t v){
-  CHSV c = {h, s, v};
-  return c;
 }
 
 inline CRGB hsv2rgb(const CHSV c) {
