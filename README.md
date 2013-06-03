@@ -6,8 +6,9 @@ Das Hauptziel ist die Darstellung und Steuerung von unterschiedlichen Lichteffek
 Allerdings kann es auch mit wenigen Code-Anpassungen für andere Projekte genutzt weden, wie z.B. MoodLamps. 
 Das Projekt befindet sich noch in der Entwicklungsphase, in welcher der Fokus auf der Entwicklung von neuen Features liegt und nicht auf der Benutzerfreundlichkeit.
 
-Ich habe mich entschieden, die Bibliothek FastSPI_LED2 zu benutzen, obwohl sie noch in der Beta-Phase ist. 
-Allerdings ist die Bibliothek im direkten Vergleich zum Vorgänger wesentlich schlanker und die Timings sind näher an den Spezifikationen der LED-Strips. 
+Ich habe mich entschieden, die Bibliothek FastSPI_LED2 zu benutzen, von der es mit der Weile einen Release Candidate 1 gibt.
+Die Bibliothek im direkten Vergleich zum Vorgänger wesentlich schlanker und die Timings sind näher an den Spezifikationen der LED-Strips. 
+Nach dem Umstieg der Beta zum RC1 der Bibliothek, kann ich auf eine eigene Definition der Strukturen für RGB bzw. HSV Farben verzichten.
 Mein Resepkt und Dank gilt dem Entwickler dieser Bibliothek, da sie sehr einfach zu benutzen ist und ohne die Bibliothek hätte ich das Projekt nicht gestartet.
 https://code.google.com/p/fastspi/
 
