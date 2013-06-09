@@ -4,7 +4,6 @@
 #define EEPROM_COLORS_OFFSET   MAX_EEPROM_COLORS*3
 
 CRGB storedColorsRGB[MAX_EEPROM_COLORS];
-CHSV storedColorsHSV[MAX_EEPROM_COLORS];
 CRGB currentRGB = CRGB(0, 0, 0);
 
 int num_led_bytes = ceil(NUM_LEDS/2.0f);
@@ -13,7 +12,6 @@ uint8_t storedLedColors[MAX_LED_CONFIGS][(NUM_LEDS/2)+1];
 void setColor(CRGB c, int idx){
   idx = idx % MAX_EEPROM_COLORS;
   storedColorsRGB[idx] = c;
-  storedColorsHSV[idx] = rgb2hsv(storedColorsRGB[idx]);
   printColor(c);
   SERIAL_PRINT(" stored as color ");
   SERIAL_PRINTLN(idx);
@@ -38,7 +36,6 @@ void readColors(){
     g = (uint8_t) (255 - EEPROM.read(i*3 + 1));
     b = (uint8_t) (255 - EEPROM.read(i*3 + 2));
     storedColorsRGB[i] = CRGB(r, g, b);
-    storedColorsHSV[i] = rgb2hsv(storedColorsRGB[i]);
   }
 }
 
@@ -56,80 +53,6 @@ void readLeds(){
       storedLedColors[i][j] = (uint8_t)EEPROM.read(EEPROM_COLORS_OFFSET + (i * num_led_bytes) + j);
     }
   }
-}
-
-inline CRGB hsv2rgb(const CHSV c) {
-  // hue: 0-359, sat: 0-255, val (brightness): 0-255
-  CRGB rgb;
-  int base;
-  if (c.s == 0) { // Achromatic color (gray).
-    rgb.r = c.v;
-    rgb.g = c.v;
-    rgb.b = c.v;
-  } 
-  else  {
-    base = ((255 - c.s) * c.v)>>8;
-    switch(c.h/60) {
-    case 0:
-      rgb.r = c.v;
-      rgb.g = (((c.v-base)*c.h)/60)+base;
-      rgb.b = base;
-      break;
-    case 1:
-      rgb.r = (((c.v-base)*(60-(c.h%60)))/60)+base;
-      rgb.g = c.v;
-      rgb.b = base;
-      break;
-    case 2:
-      rgb.r = base;
-      rgb.g = c.v;
-      rgb.b = (((c.v-base)*(c.h%60))/60)+base;
-      break;
-    case 3:
-      rgb.r = base;
-      rgb.g = (((c.v-base)*(60-(c.h%60)))/60)+base;
-      rgb.b = c.v;
-      break;
-    case 4:
-      rgb.r = (((c.v-base)*(c.h%60))/60)+base;
-      rgb.g = base;
-      rgb.b = c.v;
-      break;
-    case 5:
-      rgb.r = c.v;
-      rgb.g = base;
-      rgb.b = (((c.v-base)*(60-(c.h%60)))/60)+base;
-      break;
-    }
-  }
-  return rgb;
-}
-
-inline CHSV rgb2hsv(const CRGB c) {
-  // r: 0-255, g: 0-255, b: 0-255
-  float fr = c.r / 255.0;
-  float fg = c.g / 255.0;
-  float fb = c.b / 255.0;
-  float h, s, v, imax, imin;
-  imax = max(max(fr, fg), fb);
-  imin = min(min(fr, fg), fb);
-  if (imin == imax){
-    h = 0;
-    s = 0;
-    v = imax;
-  }
-  else{
-    float d = (fr==imin) ? fg-fb : ((fb==imin) ? fr-fg : fb-fr);
-    float j = (fr==imin) ? 3 : ((fb==imin) ? 1 : 5);
-    h = 60.0 * (j - d/(imax - imin));
-    s = (float)(imax - imin) / imax;
-    v = imax;
-  }
-  CHSV hsv;
-  hsv.h = (uint16_t)h;
-  hsv.s = (uint16_t)(s * 255);
-  hsv.v = (uint16_t)(v * 255);
-  return hsv;
 }
 
 void setLedColor(int colorIdx, int iLed, int iConfig){
@@ -165,10 +88,6 @@ CRGB getLedRGB(int iLed, int iConfig){
   return storedColorsRGB[getColorIndex(iLed, iConfig)];
 }
 
-CHSV getLedHSV(int iLed, int iConfig){
-  return storedColorsHSV[getColorIndex(iLed, iConfig)];
-}
-
 void printColor(CRGB c){
   SERIAL_PRINT("(r=");
   SERIAL_PRINT(c.r);
@@ -178,5 +97,4 @@ void printColor(CRGB c){
   SERIAL_PRINT(c.b);
   SERIAL_PRINT(")");
 }
-
 

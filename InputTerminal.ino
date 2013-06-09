@@ -83,7 +83,6 @@ void serialSetColor(){
     SERIAL_PRINT(idx);
     SERIAL_PRINTLN(" to current color.");
     storedColorsRGB[idx] = currentRGB;
-    storedColorsHSV[idx] = rgb2hsv(storedColorsRGB[idx]);
     currentColorIdx = idx;
   }
 }

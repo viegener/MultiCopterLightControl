@@ -168,6 +168,7 @@
         if ((checksum&0xFF) == (c&0xFF) && !err_rcvd) evaluateCommand(cmd);
         c_state = HEADER_IDLE;
       }
+      delay(1);
     }
     if (!initDone) return;
     if ((millis() - time) > REQUEST_DELAY){

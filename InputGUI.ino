@@ -120,7 +120,6 @@
           uint8_t b = read8();
           CRGB rgb = CRGB(r, g, b);
           storedColorsRGB[i] = rgb;
-          storedColorsHSV[i] = rgb2hsv(storedColorsRGB[i]);
         }
       break;
       case MSP_SAVE_COLORS:
@@ -226,6 +225,7 @@ void serialCom() {
           c_state = HEADER_IDLE;
        }
        digitalWrite(13, LOW);
+       delay(1);
     }
   }
 

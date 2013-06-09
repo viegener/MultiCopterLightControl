@@ -12,7 +12,6 @@ int config = 0;
 int currentColorIdx = 0;
 
 void setup(){
-  LEDS.setBrightness(64);
   LEDS.addLeds<WS2811, LED_PIN, GRB>(leds, NUM_LEDS);
   clearLeds();
   readColors();
@@ -26,6 +25,17 @@ void setup(){
   #elif defined (INPUT_MSP)
     setupInputMSP();
   #endif
+}
+
+unsigned long delayTime = millis();
+boolean checkDelay(int DELAY){
+  unsigned long newMillis = millis();
+  if (newMillis - delayTime >= DELAY){
+    delayTime = newMillis;
+    return true;
+  }
+  if (newMillis < delayTime) delayTime = 0;
+  return false;
 }
 
 void clearLeds(){
@@ -57,6 +67,10 @@ void show(){
   LEDS.show();
 }
 
+void show(int brightness){
+  LEDS.show(brightness);
+}
+
 int lastMode = -1;
 void loop(){
   #if defined (INPUT_TERMINAL)
@@ -69,22 +83,26 @@ void loop(){
     loopInputMSP();
   #endif
 
+  if (lastMode != mode) delayTime = 0;
   switch(mode){
     case MODE_0:{
       showCurrentColors(config, DELAY);
       break;
     }
     case MODE_1:{
-      runningLed(config, NULL, 0, true, LEDS_PER_ARM, DELAY); 
+//      runningLed(config, NULL, 0, true, LEDS_PER_ARM, DELAY); 
+      int arms1[] = {0, 3};
+      int arms2[] = {1, 2};
+      runningLed2(config, arms1, sizeof(arms1)/sizeof(int), arms2, sizeof(arms2)/sizeof(int), 2, DELAY);
       break;
     }
     case MODE_2:{
-//      runningLed(config, &getCRGB(250, 250, 250), 100, false, 1, DELAY); 
-      pulseBrightness(config, 50, 250, 50, 10);
+      pulseBrightness(config, 50, 250, 50, 20);
       break;
     }
     case MODE_3:{
-      police(&CRGB(250, 0, 0), &CRGB(0, 0, 250), 500);
+      runningLed(config, &CRGB(250, 250, 250), 100, false, 1, DELAY); 
+//      police(&CRGB(250, 0, 0), &CRGB(0, 0, 250), 500);
       break;
     }
   }
