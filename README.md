@@ -36,7 +36,7 @@ Wie die RGB-Strips genau verkabelt werden, dazu gibt es im Internet genügend In
 Hier kann ich z.B. auf die gute Kurzanleitung von MWC-Light RGB verweisen.
 Dort wird sehr schön und bebildert erklärt, wie die RGB-LED-Strips zu verkabeln sind. 
 
-Falls ich einmal Zeit und Lust dazu finde, werde ich auch eine ausfürhliche Erklärung zur Verkabelung hier posten.
+Falls ich einmal Zeit und Lust dazu finde, werde ich auch eine ausführliche Erklärung zur Verkabelung hier posten.
 
 Code-Struktur
 =============
@@ -57,24 +57,26 @@ Zusätzlich können 8 verschiedene Led-Konfigurationen gespeichert werden.
 Jeder LED wird hier jeweils ein Farbe aus der Farbpalette zugeordnet.
 Diese Art der Farbverwaltung benötigt sehr wenig Speicherplatz und ermöglicht in Zukunft einige interessante Effekte.
 
-<b>structs.h</b><br/>
-Beinhaltet alle Definitionen von Strukturen, welche in dem Projekt benötigt werden.
-Insbesondere wird hier die Struktur CRGB definiert.
-Falls bei euch die Farben der LEDs nicht mit den eingestellten Farben in der Software übereinstimmen, dann muss diese Struktur geändert werden.
-D.h. falls ihr Rot eingestellt habt (also z.B. [R=200, G=0, B=0]) und die LEDs z.B. grün leuchten, müsst ihr die Reihenfolge der entsprechenden Variablen in dem STRUCT ändern.
-
 <b>config.h</b><br/>
 Diese Datei ist angelehnt an die MultiWii Software.
 Diese Datei muss entsprechend euren Anforderungn angepasst werden.
 
 Die folgenden Dateien implementieren jeweils eine mögliche Variante, die LEDs und die Lichteffekte zu steuern.
 
+<b>InputGUI.ino</b><br/>
+Diese Option ist standardmässig aktiviert, wenn ihr den Quellcode aus dem GitHub ladet.
+Hier wird die Konfiguration über eine GUI implementiert.
+D.h. ihr ladet den Sketch per USB auf den Arduino und könnt dann mit der GUI die Farben konfigurieren.
+Die GUI findet ihr im Ordern 'MclcConf'.
+Dort gibt es für die Betriebssysteme Windows, Linux und MacOS jeweils einen Unterordner.
+In diesen Unterordnern ist jeweils eine ausführbare Datei, welche die GUI für die Konfiguration startet.
+Bitte schliesst den Arduino mit dem Sketch VOR dem Start der GUI an den PC an.
+In der GUI müsst ihr dann den Port des Arduinos wählen.
+
 <b>InputTerminal.ino</b><br/>
 Hier wird die Konfiguration über ein Serial Terminal implementiert.
 D.h. ihr ladet den Sketch per USB auf den Arduino und könnt dann mit dem Serial Monitor der Arduino IDE alles konfigurieren.
 Die Baud Rate beträgt 115200.
-Nur mit dieser Steuerungsvariante können die Farben eingestellt und gespeichert werden.
-Mit den restlichen Steuerungs-Varianten können nur bestimmte Effekt-Modi gewählt werden.
 
 <b>InputRC.ino</b><br/>
 Hiermit kann ein Kanal eines RC-Empfänger als Steuerung benutzt werden.
