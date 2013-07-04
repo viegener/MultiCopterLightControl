@@ -42,6 +42,7 @@ Der LED-Pin als auch der RC-Pin können in der 'config.h' angepasst werden.
 Der Anschluss eines RC-Empfängers oder MultiWii-boards ist optional.<br/><br/>
 ![My image](images/wiring.jpg)
 
+
 Code-Struktur
 =============
 Der Quellcode ist in mehere Dateien unterteilt.
@@ -205,3 +206,18 @@ Stellt die Farben der gewählten Konfiguration mit einer gewählten Helligkeit d
 Fadet die Helligkeit der LEDs zwischen den beiden gewählten Werte.
 Auch hier muss wieder eine Konfiguration angegeben werden.
 "steps" gibt an, wie fein/grob das Fading sein soll.
+
+Darstellung falscher Farben
+===========================
+Falls die LEDs andere Farben anzeigen als per Terminal oder GUI eingestellt, dann ist die interne Verdrahtung des eures LED-Strips anderes als bei den von mir verwendeten.
+Es gibt wohl keine Norm oder einige Hersteller halten sich nicht daran.
+Die von mir verwendeten LED-Strips verwenden die Reihenfolge GRB.
+Falls eure eine andere interne Reihenfolge haben könnt ihr das in der Datei 'MultiCopterLightControl.ino' anpassen.
+Dort müsst ihr die Zeile
+<code>LEDS.addLeds&#60;WS2811, LED_PIN, GRB&#62;(leds, NUM_LEDS);</code>
+z.B. ersetzen durch
+<code>LEDS.addLeds&#60;WS2811, LED_PIN, RGB&#62;(leds, NUM_LEDS);</code>
+, falls die Reihenfolge bei euch RGB ist.
+Welche Reihenfolge bei euch die richtigen Farben erzeugt, könnt ihr einfach austesten.
+Es gibt lediglich 6 möglichen Reihenfolgen: RGB, RBG, GRB, GBR, BRG und BGR.
+Evtl. werde ich diese Konfiguration in Zukunft ebenfalls in die 'config.h' aufnehmen.
