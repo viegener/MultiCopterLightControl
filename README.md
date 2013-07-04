@@ -36,7 +36,11 @@ Wie die RGB-Strips genau verkabelt werden, dazu gibt es im Internet genügend In
 Hier kann ich z.B. auf die gute Kurzanleitung von MWC-Light RGB verweisen.
 Dort wird sehr schön und bebildert erklärt, wie die RGB-LED-Strips zu verkabeln sind. 
 
-Falls ich einmal Zeit und Lust dazu finde, werde ich auch eine ausführliche Erklärung zur Verkabelung hier posten.
+Nun auch von mir eine Zeichnung, wie die LED-Strips als auch ein MultiWii-Board oder ein RC-Empfänger anzuschliessen sind.
+Die Zeichnung verwendet die Standard-Pins in der 'config.h'.
+Der LED-Pin als auch der RC-Pin können in der 'config.h' angepasst werden.
+Der Anschluss eines RC-Empfängers oder MultiWii-boards ist optional.<br/><br/>
+![My image](images/wiring.jpg)
 
 Code-Struktur
 =============
