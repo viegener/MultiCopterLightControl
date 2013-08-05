@@ -115,7 +115,6 @@ void runningLed2(int iConfig, int arms1[], int arm1Size, int arms2[], int arm2Si
   else runningOffset = (runningOffset+(LEDS_PER_ARM+(length-1))-1)%(LEDS_PER_ARM+(length-1));
 }
 
-long pulseBrightnessTime = millis();
 boolean pulseDirIn = true;
 int pulseStep = 0;
 void pulseBrightness(int iConfig, int startBrightness, int endBrightness, int steps, int DELAY){
@@ -139,5 +138,29 @@ void pulseBrightness(int iConfig, int startBrightness, int endBrightness, int st
     pulseStep = steps-1;
     pulseDirIn = false;
   }
+}
+
+int blendingStep = 0;
+int blendingForward = true;
+void blendColors(int config1, int config2, int steps, int DELAY){
+  if (!checkDelay(DELAY)) return;
+  blendingStep %= steps;
+  for (int i=0; i<NUM_LEDS; i++){
+    CRGB rgb1 = getLedRGB(i, config1);
+    CRGB rgb2 = getLedRGB(i, config2);
+    int r, g, b;
+    r = ((rgb1.r * (steps - blendingStep)) + (rgb2.r * blendingStep)) / steps;
+    g = ((rgb1.g * (steps - blendingStep)) + (rgb2.g * blendingStep)) / steps;
+    b = ((rgb1.b * (steps - blendingStep)) + (rgb2.b * blendingStep)) / steps;
+    CRGB rgb = CRGB(r, g, b);
+    setLed(i, rgb);
+  }
+  show();
+  
+  if (blendingStep==0) blendingForward = true;
+  else if (blendingStep==(steps-1)) blendingForward = false;
+  
+  if (blendingForward) blendingStep = (blendingStep+1)%steps;
+  else blendingStep = (blendingStep+(steps-1))%steps;
 }
 
