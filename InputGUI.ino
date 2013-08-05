@@ -1,9 +1,11 @@
 #if defined (INPUT_GUI)
 
   #define INBUF_SIZE 512
-  #define TX_BUFFER_SIZE 512
-  #define RX_BUFFER_SIZE 512
-  
+// V: removed TX-buffer to reduce memory consumption
+// V: RX-Buffer is not used anyhow
+//  #define TX_BUFFER_SIZE 512
+//  #define RX_BUFFER_SIZE 512
+
   #define MSP_SETUP        150
   #define MSP_COLORS       151
   #define MSP_CONFIGS      152
@@ -25,10 +27,12 @@
   #define HEADER_ERR    6
 
   uint8_t checksum, indRX, cmdMSP;
-  uint8_t serialBufferRX[RX_BUFFER_SIZE];
+//  uint8_t serialBufferRX[RX_BUFFER_SIZE];
   volatile uint8_t serialHeadRX, serialTailRX;
-  volatile uint8_t serialHeadTX, serialTailTX;
-  uint8_t serialBufferTX[TX_BUFFER_SIZE];
+// v: removed TX-buffer to reduce memory consumption
+//  volatile uint8_t serialHeadTX, serialTailTX;
+// v: removed TX-buffer to reduce memory consumption
+//  uint8_t serialBufferTX[TX_BUFFER_SIZE];
   uint8_t inBuf[INBUF_SIZE];
 
   void setupInputGUI(){
@@ -65,7 +69,7 @@
     return inBuf[indRX++]&0xff;
   }
   
-  void headSerialReply(uint8_t s) {
+  void headSerialReply(uint32_t s) {
     headSerialResponse(0, s);
   }
   
@@ -75,18 +79,23 @@
   }
   
   void UartSendData() {
+// v: Since no buffer needs to be sent this method is not necessary anymore
+/*
     while(serialHeadTX != serialTailTX) {
       if (++serialTailTX >= TX_BUFFER_SIZE) serialTailTX = 0;
       Serial.write(serialBufferTX[serialTailTX]);
     }
+    */
   }
 
-  void headSerialResponse(uint8_t err, uint8_t s) {
+//V: todo still need to check for size over 16bit
+  void headSerialResponse(uint8_t err, uint32_t s) {
     serialize8('$');
     serialize8('M');
     serialize8(err ? '!' : '>');
     checksum = 0; // start calculating a new checksum
-    serialize8(s);
+//V: transfer size as 16 bit value (parameter changed to 32 bit even
+    serialize16(s);
     serialize8(cmdMSP);
   }
   
@@ -102,14 +111,13 @@
     serialize8((a>>8) & 0xFF);
   }
 
+
   void serialize8(uint8_t a) {
-    uint8_t t = serialHeadTX;
-    if (++t >= TX_BUFFER_SIZE) t = 0;
-    serialBufferTX[t] = a;
+//V: Direct write to Serial line to reduce mem consumptiion
+    Serial.write(a);
     checksum ^= a;
-    serialHeadTX = t;
   }
-  
+
   void evaluateCommand() {
     switch(cmdMSP) {
       case MSP_SET_COLORS:
@@ -190,8 +198,9 @@ void serialCom() {
   
   while (Serial.available()>0) {
       digitalWrite(13, HIGH);
-      uint8_t bytesTXBuff = ((uint8_t)(serialHeadTX-serialTailTX))%TX_BUFFER_SIZE; // indicates the number of occupied bytes in TX buffer
-      if (bytesTXBuff > TX_BUFFER_SIZE - 50 ) return; // ensure there is enough free TX buffer to go further (50 bytes margin)
+//V: No TX-Buffer anymore
+//      uint8_t bytesTXBuff = ((uint8_t)(serialHeadTX-serialTailTX))%TX_BUFFER_SIZE; // indicates the number of occupied bytes in TX buffer
+//      if (bytesTXBuff > TX_BUFFER_SIZE - 50 ) return; // ensure there is enough free TX buffer to go further (50 bytes margin)
       c = Serial.read();
       // regular data handling to detect and handle MSP and other data
         if (c_state == HEADER_IDLE) {

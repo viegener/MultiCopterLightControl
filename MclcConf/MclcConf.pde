@@ -6,7 +6,7 @@ private static final int WINDOW_X = 800;
 private static final int WINDOW_Y = 600;
 private static final int GUI_BAUD_RATE = 115200;
 private static final String FONT_NAME = "Times New Roman"; 
-private static final int BUFFER_SIZE = 512;
+private static final int BUFFER_SIZE = 1024;
 
 boolean setupDone = false;
 boolean initCom = false;
@@ -49,9 +49,10 @@ public static final int
   HEADER_START = 1,
   HEADER_M = 2,
   HEADER_ARROW = 3,
-  HEADER_SIZE = 4,
-  HEADER_CMD = 5,
-  HEADER_ERR = 6
+  HEADER_SIZE1 = 4,
+  HEADER_SIZE2 = 5,
+  HEADER_CMD = 6,
+  HEADER_ERR = 7  
 ;
 
 public static final int
@@ -531,6 +532,8 @@ public void prevConfig(){
 
 private long time = millis();
 private void readSerialMessages(){
+  int temp;
+  
   if (!initCom) return;
   if (setupStatus<DONE){
     long newTime = millis();
@@ -576,9 +579,13 @@ private void readSerialMessages(){
       offset = 0;
       checksum = 0;
       checksum ^= (c&0xFF);
-      /* the command is to follow */
-      c_state = HEADER_SIZE;
-    } else if (c_state == HEADER_SIZE) {
+      c_state = HEADER_SIZE1;
+    } else if (c_state == HEADER_SIZE1) {
+      temp = (c&0xFF) *256;      
+      dataSize += temp;
+      checksum ^= (c&0xFF);
+      c_state = HEADER_SIZE2;
+    } else if (c_state == HEADER_SIZE2) {
       cmd = (byte)(c&0xFF);
       checksum ^= (c&0xFF);
       c_state = HEADER_CMD;
@@ -588,6 +595,18 @@ private void readSerialMessages(){
     } else if (c_state == HEADER_CMD && offset >= dataSize) {
       /* compare calculated and transferred checksum */
       if ((checksum&0xFF) == (c&0xFF)) {
+/*V: uncomment for debug purposes only */
+/*
+        System.out.println("OK "+((int)(cmd&0xFF))+": "+(checksum&0xFF)+" expected, got "+(int)(c&0xFF));
+        System.out.print("<"+(cmd&0xFF)+" "+(dataSize)+"> {");
+        for (i=0; i<dataSize; i++) {
+          if (i!=0) { System.err.print(' '); }
+          System.out.print((inBuf[i] & 0xFF));
+          System.out.print(" ");
+        }
+        System.out.println("} ["+c+"]");
+        System.out.println(new String(inBuf, 0, dataSize));
+/* */
         if (err_rcvd) {
           //System.err.println("Copter did not understand request type "+c);
         } else {
@@ -596,10 +615,11 @@ private void readSerialMessages(){
         }
       } else {
         System.out.println("invalid checksum for command "+((int)(cmd&0xFF))+": "+(checksum&0xFF)+" expected, got "+(int)(c&0xFF));
-        System.out.print("<"+(cmd&0xFF)+" "+(dataSize&0xFF)+"> {");
+        System.out.print("<"+(cmd&0xFF)+" "+(dataSize)+"> {");
         for (i=0; i<dataSize; i++) {
           if (i!=0) { System.err.print(' '); }
           System.out.print((inBuf[i] & 0xFF));
+          System.out.print(" ");
         }
         System.out.println("} ["+c+"]");
         System.out.println(new String(inBuf, 0, dataSize));

@@ -101,7 +101,7 @@ void loop(){
       break;
     }
     case MODE_3:{
-//      runningLed(config, &CRGB(250, 250, 250), 100, false, 1, DELAY); 
+//      runningLed(config, &CRGB(250, 250, 250), 100, false, 1, DELAY);
 //      police(&CRGB(250, 0, 0), &CRGB(0, 0, 250), 500);
       blendColors(0, 1, 30, 50);
       break;

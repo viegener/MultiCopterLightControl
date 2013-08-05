@@ -5,7 +5,7 @@
 //#define INPUT_MSP           // use MultiWii Serial Protcol to control lightning mode
 
 #define NUM_ARMS 4             // number of arms on the multicopter
-#define LEDS_PER_ARM 6         // leds per arm
+#define LEDS_PER_ARM 20        // leds per arm
 #define LED_PIN 12             // led pin => data of led strip
 
 // input mode depending configs
