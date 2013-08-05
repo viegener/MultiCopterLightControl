@@ -86,7 +86,9 @@ void loop(){
   if (lastMode != mode) delayTime = 0;
   switch(mode){
     case MODE_0:{
-      showCurrentColors(config, DELAY);
+      runningMorph(false, true, true, DELAY);
+//      runningDot(config, &CRGB(0, 0, 0), true, DELAY);        
+//      showCurrentColors(config, DELAY);
       break;
     }
     case MODE_1:{

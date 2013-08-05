@@ -164,3 +164,71 @@ void blendColors(int config1, int config2, int steps, int DELAY){
   else blendingStep = (blendingStep+(steps-1))%steps;
 }
 
+void runningDot(int iConfig, CRGB* blinkColor, boolean bounce, int DELAY){
+  if (!checkDelay(DELAY)) return;
+
+  clearLeds();
+
+  for (int i=0; i<NUM_LEDS; i++){
+    setLed(i, getLedRGB(i, iConfig % MAX_LED_CONFIGS));
+  }
+
+  int iLed = runningOffset;
+  for (int a=0; a<NUM_ARMS; a++){
+    setLed(iLed, *blinkColor);
+    iLed += LEDS_PER_ARM;
+  }
+  show();
+  
+  if (bounce){
+    if (runningOffset<=0) runningForward = true;
+    else if (runningOffset>=(LEDS_PER_ARM-1)) runningForward = false;
+  }
+  else runningForward = true;
+  
+  runningOffset = runningForward ?
+    (runningOffset+1)%LEDS_PER_ARM : (runningOffset-1)%LEDS_PER_ARM;
+
+}
+
+
+CRGB aColor;
+void runningMorph(boolean change_r, boolean change_g, boolean change_b, int DELAY){
+  if (!checkDelay(DELAY)) return;
+
+  clearLeds();
+  
+  aColor = CRGB(0, 0, 0);
+  if ( change_r )
+    aColor.r = 255;
+  if ( change_g )
+    aColor.g = 255;
+  if ( change_b )
+    aColor.b = 255;
+
+  float reduction = 1.0 - ( 3 * ( 1.0 / LEDS_PER_ARM ) );
+//  reduction = 0.9;
+
+  int iLed;
+  
+  for (int b=0; b<LEDS_PER_ARM; b++){
+    if ( change_r )
+      aColor.r *= reduction;
+    if ( change_g )
+      aColor.g *= reduction;
+    if ( change_b )
+      aColor.b *= reduction;
+    iLed = (b + runningOffset) % LEDS_PER_ARM;
+    setLed(iLed, aColor);
+    iLed += LEDS_PER_ARM;
+    setLed(iLed, aColor);
+    iLed += LEDS_PER_ARM;
+    setLed(iLed, aColor);
+    iLed += LEDS_PER_ARM;
+    setLed(iLed, aColor);
+  }
+  show();
+  
+  runningOffset = runningForward ?
+    (runningOffset+1)%LEDS_PER_ARM : (runningOffset-1)%LEDS_PER_ARM;
+} 
