@@ -192,43 +192,149 @@ void runningDot(int iConfig, CRGB* blinkColor, boolean bounce, int DELAY){
 }
 
 
-CRGB aColor;
-void runningMorph(boolean change_r, boolean change_g, boolean change_b, int DELAY){
-  if (!checkDelay(DELAY)) return;
+// #define MORPH_DEBUG
 
+CRGB aColor = CRGB(0, 0, 0);
+CRGB aColorNext = CRGB(0, 255, 0);
+int orgBase = 512;
+
+float reduction = .7;
+float increase = 1.3;
+
+#ifdef MORPH_DEBUG
+long lstep = 0;
+#endif
+
+int morphIncrease = false;
+
+void runningMorph(boolean change_r, boolean change_g, boolean change_b, int DELAY){
+  CRGB aColorSave;
+  if (!checkDelay(DELAY)) return;
+  
   clearLeds();
   
-  aColor = CRGB(0, 0, 0);
-  if ( change_r )
-    aColor.r = 255;
-  if ( change_g )
-    aColor.g = 255;
-  if ( change_b )
-    aColor.b = 255;
-
-  float reduction = 1.0 - ( 3 * ( 1.0 / LEDS_PER_ARM ) );
-//  reduction = 0.9;
-
-  int iLed;
-  
-  for (int b=0; b<LEDS_PER_ARM; b++){
-    if ( change_r )
-      aColor.r *= reduction;
-    if ( change_g )
-      aColor.g *= reduction;
-    if ( change_b )
-      aColor.b *= reduction;
-    iLed = (b + runningOffset) % LEDS_PER_ARM;
-    setLed(iLed, aColor);
-    iLed += LEDS_PER_ARM;
-    setLed(iLed, aColor);
-    iLed += LEDS_PER_ARM;
-    setLed(iLed, aColor);
-    iLed += LEDS_PER_ARM;
-    setLed(iLed, aColor);
+  if ( orgBase == 512 ) {
+    orgBase = 255;
+    aColor = CRGB(0, 0, 255);
   }
-  show();
+
+  int base = orgBase;
+  orgBase = -1;
   
-  runningOffset = runningForward ?
-    (runningOffset+1)%LEDS_PER_ARM : (runningOffset-1)%LEDS_PER_ARM;
-} 
+#ifdef MORPH_DEBUG
+  lstep++;
+  Serial.print("**** Step : ");
+  Serial.println( lstep );
+  
+  Serial.print("    Base : " );
+  Serial.println(base );
+#endif
+
+  if ( change_r || change_g || change_g ) {
+    aColor.r = change_r ? base : 0;
+    aColor.g = change_g ? base : 0;
+    aColor.b = change_b ? base : 0;
+  }
+
+  boolean doIncrease = morphIncrease;
+
+  aColorSave = aColor;
+
+  for (int b=0; b<LEDS_PER_ARM; b++){
+    if ( aColor.r > 0 )
+      aColor.r = base;
+    if ( aColor.g > 0 )
+      aColor.g = base;
+    if ( aColor.b > 0 )
+      aColor.b = base;
+    int iLed = b;
+    setLed(iLed, aColor);
+    iLed += LEDS_PER_ARM;
+    setLed(iLed, aColor);
+    iLed += LEDS_PER_ARM;
+    setLed(iLed, aColor);
+    iLed += LEDS_PER_ARM;
+    setLed(iLed, aColor);
+
+#ifdef MORPH_DEBUG
+    Serial.print("   Led : " );
+    Serial.print( b );
+    Serial.print("  C ( " ); 
+    Serial.print(aColor.r);
+    Serial.print("," ); 
+    Serial.print(aColor.g);
+    Serial.print("," ); 
+    Serial.print(aColor.b);
+    Serial.println(" )" ); 
+    Serial.print("        Base ");
+    Serial.print(base );
+    Serial.print("    inc ");
+    Serial.println( morphIncrease );
+#endif
+    if ( doIncrease ) {
+      base *= increase;
+//      base += 10;
+      if ( base >= 252 ) {
+        base = 255;
+        doIncrease = false;
+      }
+    } else {
+      base *= reduction;
+//      base -= 10;
+      if ( base <=7 ) {
+        base = 7;
+        doIncrease = true;
+        aColor = aColorNext;
+      }
+    }
+    if ( orgBase == -1 ) {
+      orgBase = base;
+    }
+  }
+  aColor = aColorSave;
+
+  if ( ! ( change_r || change_g || change_g ) ) {
+    if ( orgBase >= 252 ) {
+#ifdef MORPH_DEBUG
+          Serial.println(" ****** SWITCH DIR" );
+#endif
+            morphIncrease = ! morphIncrease;
+    } else if ( orgBase <= 7 ) {
+
+#ifdef MORPH_DEBUG
+      Serial.println(" ****** New Color" );
+#endif
+
+      int ns = random( 1, 7 );
+
+      aColor = aColorNext;
+      morphIncrease = ! morphIncrease;
+      aColorNext = CRGB(0, 0, 0);
+      if ( (  ns & 0x04 ) > 0 ) {
+        aColorNext.r = 255;
+      }
+      if ( (  ns & 0x02 ) > 0 ) {
+        aColorNext.g = 255;
+      }
+      if ( (  ns & 0x01 ) > 0 ) {
+        aColorNext.b = 255;
+      }
+#ifdef MORPH_DEBUG
+      Serial.print("    is : ");
+      Serial.print("  C ( " ); 
+      Serial.print(aColorNext.r);
+      Serial.print("," ); 
+      Serial.print(aColorNext.g);
+      Serial.print("," ); 
+      Serial.print(aColorNext.b);
+      Serial.println(" )" ); 
+#endif
+    }
+  }
+
+  show();
+//  delay(2000);
+}
+
+
+
